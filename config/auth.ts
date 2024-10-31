@@ -8,13 +8,9 @@ export const authenticateToken = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const token = req.cookies.accessToken;
-
-    if (!token) {
-      return res.status(401).json({ message: "No token provided" });
-    }
 
     jwt.verify(
       token,

@@ -1,12 +1,21 @@
 import express from "express";
 import { authenticateToken } from "../config/auth";
+import {
+  getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+  getUserProfile,
+  createUser,
+} from "../controllers/user";
 
 const router = express.Router();
 
-router.get("/", authenticateToken /* getAllUsers controller */);
-router.get("/:id", authenticateToken /* getUserById controller */);
-router.put("/:id", authenticateToken /* updateUser controller */);
-router.delete("/:id", authenticateToken /* deleteUser controller */);
-router.get("/:id/profile", authenticateToken /* getUserProfile controller */);
+router.get("/", getAllUsers);
+router.get("/:id", authenticateToken, getUserById);
+router.post("/", createUser);
+router.put("/:id", authenticateToken, updateUser);
+router.delete("/:id", authenticateToken, deleteUser);
+router.get("/:id/profile", authenticateToken, getUserProfile);
 
-export default router;
+export const usersRouter = router;
