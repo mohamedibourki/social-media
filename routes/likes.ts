@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.post("/:postId", authenticateToken /* likePost controller */);
 router.delete("/:postId", authenticateToken /* unlikePost controller */);
-router.get("/user/:userId", authenticateToken /* getUserLikes controller */);
+router.get("/student/:studentId", authenticateToken /* getStudentLikes controller */);
 
 export default router;

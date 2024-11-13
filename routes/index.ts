@@ -1,6 +1,6 @@
 import express from "express";
 import authRoutes from "./auth";
-import userRoutes from "./users";
+import studentRoutes from "./student";
 import postRoutes from "./posts";
 import commentRoutes from "./comments";
 import likeRoutes from "./likes";
@@ -12,7 +12,7 @@ import adminRoutes from "./admin";
 const app = express();
 
 app.use("/auth", authRoutes);
-app.use("/users", userRoutes);
+app.use("/students", studentRoutes);
 app.use("/posts", postRoutes);
 app.use("/comments", commentRoutes);
 app.use("/likes", likeRoutes);

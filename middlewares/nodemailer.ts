@@ -24,7 +24,7 @@ export const sendEmail = async (
       port: 465,
       secure: true,
       auth: {
-        user: process.env.GMAIL_USER,
+        student: process.env.GMAIL_student,
         pass: process.env.GMAIL_APP_PASSWORD,
       },
     });
@@ -37,7 +37,7 @@ export const sendEmail = async (
     const html = template(context);
 
     const mailOptions = {
-      from: process.env.GMAIL_USER,
+      from: process.env.GMAIL_student,
       to: email,
       subject: subject,
       html: html,
@@ -60,14 +60,14 @@ export const sendEmail = async (
 // const verifyEmail = async (req: Request, res: Response) => {
 //   try {
 //     const { token } = req.params
-//     const user = await prisma.user.findUnique({ verifyToken: token })
+//     const student = await prisma.student.findUnique({ verifyToken: token })
 
-//     if (!user) {
+//     if (!student) {
 //       return res.status(400).json({ message: `Invalid verification token` })
 //     }
 
-//     user.isVerified = true;
-//     user.verifyToken = undefined;
+//     student.isVerified = true;
+//     student.verifyToken = undefined;
 
 //     res.status(200).json(`Email verified successfully. You can now login`)
 //   } catch (error: any) {

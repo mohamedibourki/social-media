@@ -30,19 +30,22 @@ router.post("/login", async (req, res, next) => {
         .json({ message: "Please provide email and password" });
     }
 
-    const user = await prisma.user.findUnique({
+    const student = await prisma.student.findUnique({
       where: { email },
     });
 
-    if (!user || !(await comparePassword(password, user.password as string))) {
+    if (
+      !student ||
+      !(await comparePassword(password, student.password as string))
+    ) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    // if (!user.isVerified) {
+    // if (!student.isVerified) {
     //   return res.status(403).json({ message: `Please verify your email before login`})
     // }
 
-    const payload = { sub: user.id, role: user.roleId };
+    const payload = { sub: student.id, role: student.roleId };
 
     const accessToken = jwt.sign(payload, jwtOptions.secretKey, {
       expiresIn: `${accessTokenMinutesDelay}m`,
@@ -111,31 +114,31 @@ router.get("/google/callback", (req, res, next) => {
 });
 
 router.get("/profile", authenticateToken, (req: Request, res: Response) => {
-  const userId = req.user?.sub;
+  const studentId = req.student?.sub;
 
-  if (!userId) {
-    return res.status(400).json({ message: "User ID is missing" });
+  if (!studentId) {
+    return res.status(400).json({ message: "Student ID is missing" });
   }
 
-  prisma.user
+  prisma.student
     .findUnique({
       where: {
-        id: Number(userId),
+        id: Number(studentId),
       },
     })
-    .then((user) => {
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
+    .then((student) => {
+      if (!student) {
+        return res.status(404).json({ message: "Student not found" });
       }
       res.status(200).json({
-        name: `${user.firstName} ${user.lastName}`,
-        email: user.email,
-        image: user.image,
+        name: `${student.firstName} ${student.lastName}`,
+        email: student.email,
+        image: student.image,
       });
     })
     .catch((error: any) => {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
+      console.error("Error fetching student:", error);
+      res.status(500).json({ message: "Failed to fetch student" });
     });
 });
 
@@ -148,12 +151,12 @@ router.post("/refreshToken", (req, res) => {
       return res.status(403).json({ message: "No refresh token provided" });
     }
 
-    jwt.verify(refreshToken, jwtOptions.secretKey, (err: any, user: any) => {
+    jwt.verify(refreshToken, jwtOptions.secretKey, (err: any, student: any) => {
       if (err) {
         return res.status(403).json({ message: "Invalid refresh token" });
       }
 
-      const accessToken = jwt.sign({ sub: user.sub }, jwtOptions.secretKey, {
+      const accessToken = jwt.sign({ sub: student.sub }, jwtOptions.secretKey, {
         expiresIn: `${accessTokenMinutesDelay}m`,
       });
 
@@ -172,7 +175,7 @@ router.post("/refreshToken", (req, res) => {
 });
 
 router.get("/check", authenticateToken, (req, res) => {
-  res.status(200).json({ message: "User is authenticated" });
+  res.status(200).json({ message: "Student is authenticated" });
 });
 
 router.post("/logout", (req: Request, res: Response, next: NextFunction) => {

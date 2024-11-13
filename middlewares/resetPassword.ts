@@ -4,7 +4,7 @@ import Joi from "joi";
 import { sendEmail } from "./nodemailer";
 import dotenv from "dotenv";
 import { hashPassword } from "./bcrypt";
-import { Users } from "../models/user";
+import { Students } from "../models/student";
 
 dotenv.config();
 
@@ -26,10 +26,10 @@ export const resetPassword = async (req: Request, res: Response) => {
       return res.status(400).json(error.details[0].message);
     }
 
-    const user = await Users.findOne({ email });
+    const student = await Students.findOne({ email });
 
-    if (!user) {
-      return res.status(404).json("User with this email not found");
+    if (!student) {
+      return res.status(404).json("Student with this email not found");
     }
 
     const token = crypto.randomBytes(20).toString("hex");
@@ -38,14 +38,14 @@ export const resetPassword = async (req: Request, res: Response) => {
     const expires = new Date();
     expires.setMinutes(expires.getMinutes() + 5);
 
-    await Users.findByIdAndUpdate(user._id, {
+    await Students.findByIdAndUpdate(student._id, {
       resetToken: token,
       resetTokenExpires: expires,
     });
 
     const subject = "Reset Password";
     await sendEmail(
-      user.firstName as string,
+      student.firstName as string,
       email,
       subject,
       `${subject} ${resetPasswordLink}`
@@ -71,19 +71,19 @@ export const updatePassword = async (req: Request, res: Response) => {
       return res.status(400).json(error.details[0].message);
     }
 
-    const user = await Users.findOne({ resetToken: token });
+    const student = await Students.findOne({ resetToken: token });
 
     if (
-      !user ||
-      !user.resetTokenExpires ||
-      user.resetTokenExpires < new Date()
+      !student ||
+      !student.resetTokenExpires ||
+      student.resetTokenExpires < new Date()
     ) {
       return res.status(404).json("Invalid or expired token");
     }
 
     const hashedPassword = await hashPassword(password);
 
-    await Users.findByIdAndUpdate(user._id, {
+    await Students.findByIdAndUpdate(student._id, {
       password: hashedPassword,
       resetToken: null,
       resetTokenExpires: null,

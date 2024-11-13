@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import { FriendRequests } from "../models/friendRequest";
 
 export const sendFriendRequest = async (req: Request, res: Response) => {
   try {
     const friendRequest = new FriendRequests({
-      senderId: req.user.id,
+      senderId: req.student.id,
       receiverId: req.body.receiverId,
     });
     await friendRequest.save();
@@ -20,7 +20,7 @@ export const getReceivedFriendRequests = async (
 ) => {
   try {
     const requests = await FriendRequests.find({
-      receiverId: req.user.id,
+      receiverId: req.student.id,
       status: "pending",
     });
     res.status(200).json(requests);
@@ -33,7 +33,7 @@ export const getReceivedFriendRequests = async (
 
 export const getSentFriendRequests = async (req: Request, res: Response) => {
   try {
-    const requests = await FriendRequests.find({ senderId: req.user.id });
+    const requests = await FriendRequests.find({ senderId: req.student.id });
     res.status(200).json(requests);
   } catch (error) {
     res
@@ -45,7 +45,7 @@ export const getSentFriendRequests = async (req: Request, res: Response) => {
 export const acceptFriendRequest = async (req: Request, res: Response) => {
   try {
     const request = await FriendRequests.findOneAndUpdate(
-      { id: req.params.id, receiverId: req.user.id },
+      { id: req.params.id, receiverId: req.student.id },
       { status: "accepted" },
       { new: true }
     );
@@ -61,7 +61,7 @@ export const acceptFriendRequest = async (req: Request, res: Response) => {
 export const rejectFriendRequest = async (req: Request, res: Response) => {
   try {
     const request = await FriendRequests.findOneAndUpdate(
-      { id: req.params.id, receiverId: req.user.id },
+      { id: req.params.id, receiverId: req.student.id },
       { status: "rejected" },
       { new: true }
     );

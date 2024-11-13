@@ -1,40 +1,58 @@
 import type { Request, Response } from "express";
-import { Users } from "../models/user";
+import { Students } from "../models/student";
 import jwt from "jsonwebtoken";
 
-export const registerUser = async (req: Request, res: Response) => {
+export const registerStudent = async (req: Request, res: Response) => {
   try {
     const { username, email, password } = req.body;
-    const user = new Users({ username, email, password });
-    await user.save();
-    res.status(201).json({ message: "User registered successfully" });
+    const student = new Students({ username, email, password });
+    await student.save();
+    res.status(201).json({ message: "Student registered successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error registering user", error });
+    res.status(500).json({ message: "Error registering student", error });
   }
 };
 
-export const loginUser = async (req: Request, res: Response) => {
+export const loginStudent = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { email, password } = req.body;
-    const user = await Users.findOne({ email }).select("+password");
-    if (!user || !(await user.comparePassword(password))) {
-      return res.status(401).json({ message: "Invalid credentials" });
+    const student = await Students.findOne({ email }).select("+password");
+
+    if (!student || !(await student.comparePassword(password))) {
+      res.status(401).json({ message: "Invalid credentials" });
+      return;
     }
+
     const token = jwt.sign(
-      { id: user.id },
+      { id: student.id },
       process.env.JWT_SECRET_KEY || "secret",
-      {
-        expiresIn: "1d",
-      }
+      { expiresIn: "1d" }
     );
-    res.cookie("accessToken", token, { httpOnly: true });
-    res.status(200).json({ message: "Login successful" });
+
+    res.cookie("accessToken", token, {
+      httpOnly: true,
+      secure: true,
+    });
+
+    const socketToken = jwt.sign(
+      { id: student.id },
+      process.env.SOCKET_SECRET_KEY || "socket-secret",
+      { expiresIn: "1d" }
+    );
+
+    res.status(200).json({
+      message: "Login successful",
+      socketToken,
+    });
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error });
   }
 };
 
-export const logoutUser = (req: Request, res: Response) => {
+export const logoutStudent = (req: Request, res: Response) => {
   res.clearCookie("accessToken");
   res.status(200).json({ message: "Logout successful" });
 };

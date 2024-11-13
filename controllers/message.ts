@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import { Messages } from "../models/message";
 
 export const sendMessage = async (req: Request, res: Response) => {
   try {
-    const message = new Messages({ ...req.body, senderId: req.user.id });
+    const message = new Messages({ ...req.body, senderId: req.student.id });
     await message.save();
     res.status(201).json(message);
   } catch (error) {
@@ -13,7 +13,7 @@ export const sendMessage = async (req: Request, res: Response) => {
 
 export const getInbox = async (req: Request, res: Response) => {
   try {
-    const messages = await Messages.find({ receiverId: req.user.id });
+    const messages = await Messages.find({ receiverId: req.student.id });
     res.status(200).json(messages);
   } catch (error) {
     res.status(500).json({ message: "Error fetching inbox", error });
@@ -22,7 +22,7 @@ export const getInbox = async (req: Request, res: Response) => {
 
 export const getSentMessages = async (req: Request, res: Response) => {
   try {
-    const messages = await Messages.find({ senderId: req.user.id });
+    const messages = await Messages.find({ senderId: req.student.id });
     res.status(200).json(messages);
   } catch (error) {
     res.status(500).json({ message: "Error fetching sent messages", error });

@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 
 interface INotification {
   id: number;
-  userId: number;
+  studentId: number;
   message: string;
   isRead: boolean;
   type?: "message" | "like" | "comment" | "follow";
@@ -18,7 +18,7 @@ const notificationSchema = new Schema<INotification>(
       index: true,
       immutable: true,
     },
-    userId: {
+    studentId: {
       type: Number,
       required: true,
       index: true,
@@ -48,7 +48,7 @@ const notificationSchema = new Schema<INotification>(
   }
 );
 
-notificationSchema.index({ userId: 1 });
+notificationSchema.index({ studentId: 1 });
 
 export const Notifications = model<INotification>(
   "Notification",

@@ -1,17 +1,17 @@
 import express from "express";
 import { authenticateToken } from "../config/auth";
 import {
-  adminGetAllUsers,
+  adminGetAllStudents,
   adminGetAllPosts,
-  adminDeleteUser,
   adminDeletePost,
+  adminDeleteStudent,
 } from "../controllers/admin";
 
 const router = express.Router();
 
-router.get("/users", authenticateToken, adminGetAllUsers);
+router.get("/students", authenticateToken, adminGetAllStudents);
 router.get("/posts", authenticateToken, adminGetAllPosts);
-router.delete("/users/:id", authenticateToken, adminDeleteUser);
+router.delete("/students/:id", authenticateToken, adminDeleteStudent);
 router.delete("/posts/:id", authenticateToken, adminDeletePost);
 
 export default router;

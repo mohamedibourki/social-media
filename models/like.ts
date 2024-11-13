@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 
 interface ILike {
   id: number;
-  userId: number;
+  studentId: number;
   postId: number;
 }
 
@@ -15,7 +15,7 @@ const likeSchema = new Schema<ILike>(
       index: true,
       immutable: true,
     },
-    userId: {
+    studentId: {
       type: Number,
       required: true,
       index: true,
@@ -31,6 +31,6 @@ const likeSchema = new Schema<ILike>(
   }
 );
 
-likeSchema.index({ userId: 1, postId: 1 });
+likeSchema.index({ studentId: 1, postId: 1 });
 
 export const Likes = model<ILike>("Like", likeSchema);

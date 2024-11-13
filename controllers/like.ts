@@ -1,9 +1,12 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import { Likes } from "../models/like";
 
 export const likePost = async (req: Request, res: Response) => {
   try {
-    const like = new Likes({ userId: req.user.id, postId: req.params.postId });
+    const like = new Likes({
+      studentId: req.student.id,
+      postId: req.params.postId,
+    });
     await like.save();
     res.status(201).json({ message: "Post liked successfully" });
   } catch (error) {
@@ -14,7 +17,7 @@ export const likePost = async (req: Request, res: Response) => {
 export const unlikePost = async (req: Request, res: Response) => {
   try {
     const result = await Likes.findOneAndDelete({
-      userId: req.user.id,
+      studentId: req.student.id,
       postId: req.params.postId,
     });
     if (!result) {
@@ -26,11 +29,11 @@ export const unlikePost = async (req: Request, res: Response) => {
   }
 };
 
-export const getUserLikes = async (req: Request, res: Response) => {
+export const getStudentLikes = async (req: Request, res: Response) => {
   try {
-    const likes = await Likes.find({ userId: req.params.userId });
+    const likes = await Likes.find({ studentId: req.params.studentId });
     res.status(200).json(likes);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching user likes", error });
+    res.status(500).json({ message: "Error fetching student likes", error });
   }
 };

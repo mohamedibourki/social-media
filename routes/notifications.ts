@@ -3,7 +3,7 @@ import { authenticateToken } from "../config/auth";
 
 const router = express.Router();
 
-router.get("/", authenticateToken /* getUserNotifications controller */);
+router.get("/", authenticateToken /* getStudentNotifications controller */);
 router.put(
   "/:id/read",
   authenticateToken /* markNotificationAsRead controller */

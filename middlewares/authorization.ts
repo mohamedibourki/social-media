@@ -6,10 +6,10 @@ export const isAdmin = async (
   res: Response,
   next: NextFunction
 ) => {
-  const userRoleId = req.user?.role;
+  const studentRoleId = req.student?.role;
 
   try {
-    const role = await Role.findById(userRoleId);
+    const role = await Role.findById(studentRoleId);
 
     if (role?.reference === "admin") {
       next();
@@ -17,26 +17,26 @@ export const isAdmin = async (
       return res.status(403).json("Access denied");
     }
   } catch (error) {
-    return res.status(500).json("Error checking user role");
+    return res.status(500).json("Error checking student role");
   }
 };
 
-export const isUser = async (
+export const isStudent = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const userRoleId = req.user?.role;
+  const studentRoleId = req.student?.role;
 
   try {
-    const role = await Role.findById(userRoleId);
+    const role = await Role.findById(studentRoleId);
 
-    if (role?.reference === "user") {
+    if (role?.reference === "student") {
       next();
     } else {
       return res.status(403).json("Access denied");
     }
   } catch (error) {
-    return res.status(500).json("Error checking user role");
+    return res.status(500).json("Error checking student role");
   }
 };
