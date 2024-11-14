@@ -9,14 +9,16 @@ import friendRequestRoutes from "./friendRequests";
 import notificationRoutes from "./notifications";
 import adminRoutes from "./admin";
 
-const app = express();
+const router = express.Router();
 
-app.use("/auth", authRoutes);
-app.use("/students", studentRoutes);
-app.use("/posts", postRoutes);
-app.use("/comments", commentRoutes);
-app.use("/likes", likeRoutes);
-app.use("/messages", messageRoutes);
-app.use("/friend-requests", friendRequestRoutes);
-app.use("/notifications", notificationRoutes);
-app.use("/admin", adminRoutes);
+router.use("/auth", authRoutes);
+router.use("/students", studentRoutes);
+router.use("/posts", postRoutes);
+router.use("/comments", commentRoutes);
+router.use("/likes", likeRoutes);
+router.use("/messages", messageRoutes);
+router.use("/friend-requests", friendRequestRoutes);
+router.use("/notifications", notificationRoutes);
+router.use("/admin", adminRoutes);
+
+export default router;
