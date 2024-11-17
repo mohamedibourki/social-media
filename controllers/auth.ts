@@ -26,31 +26,41 @@ export const loginStudent = async (
       return;
     }
 
+    const payload = {
+      id: student.id,
+      username: student.username,
+      email: student.email,
+    };
+
     // Generate access token
     const accessToken = jwt.sign(
-      { id: student.id },
+      payload,
       process.env.JWT_SECRET_KEY || "secret",
-      { expiresIn: "15m" }
+      {
+        expiresIn: "15m",
+      }
     );
 
     // Generate refresh token with longer expiration
     const refreshToken = jwt.sign(
-      { id: student.id },
+      payload,
       process.env.REFRESH_TOKEN_SECRET || "refresh-secret",
-      { expiresIn: "1d" }
+      {
+        expiresIn: "7d",
+      }
     );
 
     // Set both tokens as HTTP-only cookies
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: true,
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      expires: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
     });
 
     const socketToken = jwt.sign(
@@ -59,15 +69,48 @@ export const loginStudent = async (
       { expiresIn: "15m" }
     );
 
-    res.status(200).json({ message: "Login successful" });
+    res.cookie("socketToken", socketToken, {
+      httpOnly: true,
+      secure: true,
+      expires: new Date(253402300799999),
+    });
+
+    res.status(200).json({
+      message: "Login successful",
+    });
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error });
+  }
+};
+
+export const checkToken = async (req: Request, res: Response) => {
+  try {
+    const studentId = req.student.id;
+
+    const student = await Students.findOne({ id: studentId });
+
+    if (!student) {
+      res.status(401).json({ message: "Student not found" });
+      return;
+    }
+
+    res.status(200).json({
+      student: {
+        id: student.id,
+        username: student.username,
+        email: student.email,
+      },
+    });
+  } catch (error) {
+    console.error("Auth check error:", error);
+    return res.status(500).json(error);
   }
 };
 
 export const logoutStudent = (req: Request, res: Response) => {
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
+  res.clearCookie("socketToken");
   res.status(200).json({ message: "Logout successful" });
 };
 

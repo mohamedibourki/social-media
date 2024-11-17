@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import { comparePassword } from "./bcrypt";
 import { authenticateToken } from "../config/auth";
-import { passport } from "../config/passport";
+// import { passport } from "../config/passport";
 
 dotenv.config();
 const prisma = new PrismaClient();

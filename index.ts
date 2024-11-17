@@ -1,25 +1,42 @@
 import express from "express";
-import { createServer } from "http";
 import { Server } from "socket.io";
 import dotenv from "dotenv";
 import { connectDB } from "./config/mongo";
 import apiRoutes from "./routes/index";
 import cors from "cors";
+import session from "express-session";
+import cookieParser from "cookie-parser";
+import helmet from "helmet";
+import logger from "morgan";
 
 dotenv.config();
 
 const app = express();
-
-app.use(express.json());
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "secret",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true },
+  })
+);
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
+app.use(cookieParser());
+app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(express.json());
+app.use(logger("dev"));
 
 const PORT = process.env.PORT || 3000;
-const httpServer = createServer(app);
 
-const io = new Server(httpServer, {
+const io = new Server({
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -53,9 +70,9 @@ app.use("/api", apiRoutes);
 // error middleware
 app.use((err: any, req: any, res: any, next: any) => {
   console.error(err.stack);
-  res.status(500).json({ message: "Something broke!", error: err.message });
+  res.status(500).json(err);
 });
 
-httpServer.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
