@@ -24,7 +24,7 @@ interface IStudent extends Document {
   phone: number;
   cin: string;
   birthDate: Date;
-  gender?: "male" | "female" | "other";
+  gender?: "male" | "female";
   nationality: string;
   country: string;
   address: string;

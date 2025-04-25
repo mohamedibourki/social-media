@@ -68,10 +68,10 @@ io.on("connection", (socket) => {
 app.use("/api", apiRoutes);
 
 // error middleware
-app.use((err: any, req: any, res: any, next: any) => {
-  console.error(err.stack);
-  res.status(500).json(err);
-});
+// app.use((err: any, req: any, res: any, next: any) => {
+//   console.error(err.stack);
+//   res.status(500).json(err);
+// });
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
