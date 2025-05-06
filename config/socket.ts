@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import { Students } from "../models/student";
+import { Students } from "../models/students";
 import { Notifications } from "../models/notification";
 
 const io = new Server(3000, {

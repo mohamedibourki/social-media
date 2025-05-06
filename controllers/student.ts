@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { Students } from "../models/student";
+import { Students } from "../models/students";
 import { Counter } from "../utils/dbConter";
 
 export const getAllStudents = async (req: Request, res: Response) => {

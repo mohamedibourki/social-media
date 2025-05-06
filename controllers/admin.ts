@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import { Students } from "../models/student";
-import { Posts } from "../models/post";
+import { Students } from "../models/students";
+import { Posts } from "../models/posts";
 
 export const adminGetAllStudents = async (
   req: Request,

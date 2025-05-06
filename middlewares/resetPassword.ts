@@ -4,7 +4,7 @@ import Joi from "joi";
 import { sendEmail } from "./nodemailer";
 import dotenv from "dotenv";
 import { hashPassword } from "./bcrypt";
-import { Students } from "../models/student";
+import { Students } from "../models/students";
 
 dotenv.config();
 
