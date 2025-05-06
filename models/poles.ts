@@ -1,0 +1,1 @@
+const pole1 = "digital ai"
