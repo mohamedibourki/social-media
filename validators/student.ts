@@ -22,9 +22,9 @@ export const studentValidator = z.object({
     { message: "Student must be at least 10 years old" }
   ),
 
-  sexe: z.enum(['Male', 'Female'], {
-    required_error: "Sexe is required",
-    invalid_type_error: "Sexe must be either 'Male' or 'Female'"
+  gender: z.enum(['Male', 'Female'], {
+    required_error: "Gender is required",
+    invalid_type_error: "Gender must be either 'Male' or 'Female'"
   }),
 
   className: z.string()
@@ -32,5 +32,4 @@ export const studentValidator = z.object({
 
   role: z.literal("Student").optional(),
 
-  // Optional fields like createdAt/updatedAt can be added if needed
 });

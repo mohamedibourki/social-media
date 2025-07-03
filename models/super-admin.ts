@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
+import type { ISuperAdmin } from "../interfaces/super-admin";
 
-const superAdminSchema = new mongoose.Schema({
+const superAdminSchema = new mongoose.Schema<ISuperAdmin>({
     fullName: {
         type: String,
         required: true,
@@ -27,6 +28,6 @@ const superAdminSchema = new mongoose.Schema({
     { timestamps: true }
 )
 
-const SuperAdmin = mongoose.model('SuperAdmin', superAdminSchema);
+const SuperAdminModel = mongoose.model<ISuperAdmin>('SuperAdmin', superAdminSchema);
 
-export default SuperAdmin
+export default SuperAdminModel;

@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
+import type { IAdmin } from "../interfaces/admin";
 
-const adminSchema = new mongoose.Schema(
+const adminSchema = new mongoose.Schema<IAdmin>(
   {
     fullName: {
       type: String,
@@ -28,6 +29,6 @@ const adminSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Admin = mongoose.model('Admin', adminSchema);
+const AdminModel = mongoose.model<IAdmin>('Admin', adminSchema);
 
-export default Admin;
+export default AdminModel;

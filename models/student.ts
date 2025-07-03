@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
+import type { IStudent } from "../interfaces/student";
 
-const studentSchema = new mongoose.Schema({
+const studentSchema = new mongoose.Schema<IStudent>({
     fullName: {
         type: String,
         required: true
@@ -18,14 +19,14 @@ const studentSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    sexe: {
+    gender: {
         type: String,
         required: true,
         enum: ['Male', 'Female'],
     },
     className: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'classes',
+        ref: 'classe',
         required: true,
     },
     role: {
@@ -34,4 +35,6 @@ const studentSchema = new mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model("student", studentSchema);
+const StudentModel = mongoose.model<IStudent>("student", studentSchema);
+
+export default StudentModel;

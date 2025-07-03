@@ -1,12 +1,13 @@
-import { Document } from "mongoose";
+
+import { Document, Types } from "mongoose";
 
 export interface IStudent extends Document {
-    fullname: string;
+    fullName: string;
     schoolEmail: string;
     password: string;
     birthDay: Date;
-    sexe: 'Male' | 'Female';
-    className: string; // Assuming className is a reference to another document
+    gender: 'Male' | 'Female';
+    className: Types.ObjectId; // Assuming className is a reference to another document
     role: string; // Default is "Student"
     createdAt?: Date;
     updatedAt?: Date;
