@@ -10,6 +10,6 @@ const LikeSchema = new Schema<ILike>(
   { timestamps: true }
 );
 
-LikeSchema.index({ post: 1, user: 1 }, { unique: true }); // Prevent duplicate likes
+LikeSchema.index({ post: 1, student: 1 }, { unique: true }); // Prevent duplicate likes
 
 export const LikeModel = model<ILike>("Like", LikeSchema);
