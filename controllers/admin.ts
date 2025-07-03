@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { Students } from "../models/student";
 import { Posts } from "../models/post";
 
+
 export const adminGetAllStudents = async (
   req: Request,
   res: Response
