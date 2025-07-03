@@ -8,9 +8,9 @@ const EventSchema = new Schema<IEvent>(
     description: { type: String, required: true, maxlength: 1000 },
     date: { type: Date, required: true },
     location: { type: String, required: true },
-    organizer: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    organizer: { type: Schema.Types.ObjectId, ref: "Admin", required: true },
     posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
-    attendees: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    attendees: [{ type: Schema.Types.ObjectId, ref: "Student" }],
   },
   { timestamps: true }
 );
