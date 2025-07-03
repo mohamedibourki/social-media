@@ -1,15 +1,6 @@
 // models/subjects.ts
 import mongoose, { Document, Schema } from "mongoose";
-
-// Interface for Subject
-export interface ISubject extends Document {
-  title: string;
-  description?: string;
-  class_id: mongoose.Types.ObjectId;
-  professor_id?: mongoose.Types.ObjectId;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import {ISubject} from "../interfaces/subject";
 
 // Schema definition
 const subjectSchema = new Schema<ISubject>(
@@ -32,7 +23,7 @@ const subjectSchema = new Schema<ISubject>(
     },
     professor_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Professor",
+      ref: "Admin",
       required: false,
     },
   },
