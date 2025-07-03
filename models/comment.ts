@@ -1,7 +1,7 @@
 import { Schema, model, Types } from "mongoose";
 import type { IComment } from "../interfaces/comment";
 
-const CommentSchema = new Schema<IComment>(
+const commentSchema = new Schema<IComment>(
   {
     text: { type: String, required: true, trim: true, maxlength: 300 },
     author: {
@@ -13,6 +13,6 @@ const CommentSchema = new Schema<IComment>(
   { timestamps: true }
 );
 
-CommentSchema.index({ post: 1 }); // Faster comment lookup per post
+commentSchema.index({ post: 1 }); // Faster comment lookup per post
 
-export const CommentModel = model<IComment>("Comment", CommentSchema);
+export const CommentModel = model<IComment>("Comment", commentSchema);

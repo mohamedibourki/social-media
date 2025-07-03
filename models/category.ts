@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
-import { ICategory } from "../interfaces/category";
+import type { ICategory } from "../interfaces/category";
 
 const categorySchema = new Schema<ICategory>(
   {
@@ -28,5 +28,5 @@ const categorySchema = new Schema<ICategory>(
 categorySchema.index({ pole_id: 1 });
 categorySchema.index({ nom: 1 });
 
-const Category = mongoose.model<ICategory>("Category", categorySchema);
-export default Category;
+export const CategoryModel = mongoose.model<ICategory>("Category", categorySchema);
+

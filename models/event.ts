@@ -2,7 +2,7 @@ import { Schema, model, Types } from "mongoose";
 import type { IEvent } from "../interfaces/event";
 
 
-const EventSchema = new Schema<IEvent>(
+const eventSchema = new Schema<IEvent>(
   {
     title: { type: String, required: true, trim: true, maxlength: 100 },
     description: { type: String, required: true, maxlength: 1000 },
@@ -15,6 +15,6 @@ const EventSchema = new Schema<IEvent>(
   { timestamps: true }
 );
 
-EventSchema.index({ date: 1 }); // Optimize event date queries
+eventSchema.index({ date: 1 }); // Optimize event date queries
 
-export const EventModel = model<IEvent>("Event", EventSchema);
+export const EventModel = model<IEvent>("Event", eventSchema);

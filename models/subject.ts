@@ -1,6 +1,6 @@
 // models/subjects.ts
 import mongoose, { Document, Schema } from "mongoose";
-import {ISubject} from "../interfaces/subject";
+import type { ISubject } from "../interfaces/subject";
 
 // Schema definition
 const subjectSchema = new Schema<ISubject>(
@@ -37,5 +37,4 @@ subjectSchema.index({ class_id: 1 });
 subjectSchema.index({ professor_id: 1 });
 
 // Export model
-const Subject = mongoose.model<ISubject>("Subject", subjectSchema);
-export default Subject;
+export const SubjectModel = mongoose.model<ISubject>("Subject", subjectSchema);

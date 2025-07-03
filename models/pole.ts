@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
-import {IPole} from "../intefaces/pole";
+import type { IPole } from "../interfaces/pole";
 
 const poleSchema = new Schema<IPole>(
   {
@@ -23,5 +23,5 @@ const poleSchema = new Schema<IPole>(
 
 poleSchema.index({ nom: 1 });
 
-const Pole = mongoose.model<IPole>("Pole", poleSchema);
-export default Pole;
+export const PoleModel = mongoose.model<IPole>("Pole", poleSchema);
+
