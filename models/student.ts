@@ -26,7 +26,7 @@ const studentSchema = new mongoose.Schema<IStudent>({
     },
     className: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'classe',
+        ref: 'Class',
         required: true,
     },
     role: {
