@@ -26,3 +26,4 @@ const classSchema = new Schema<IClass>(
   },
   { timestamps: true }
 )
+export const ClassModel = mongoose.model<IClass>('Class', ClassSchema); 
