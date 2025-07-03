@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { Students } from "../models/students";
+import { Students } from "../models/student";
 import jwt from "jsonwebtoken";
 
 export const registerStudent = async (req: Request, res: Response) => {
