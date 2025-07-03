@@ -1,11 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
-
-export interface IPole extends Document {
-  nom: string;
-  description?: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import {IPole} from "../intefaces/pole";
 
 const poleSchema = new Schema<IPole>(
   {
