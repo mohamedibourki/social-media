@@ -1,13 +1,17 @@
 import { Schema, model, Types } from "mongoose";
 import type { IPost } from "../interfaces/post";
 
-
 const PostSchema = new Schema<IPost>(
   {
     content: { type: String, required: true, trim: true, maxlength: 500 },
     author: { type: Schema.Types.ObjectId, ref: "Admin", required: true },
     event: { type: Schema.Types.ObjectId, ref: "Event", required: true },
-    likes: [{ type: Schema.Types.ObjectId, ref: "Student" }, { type: Schema.Types.ObjectId, ref: "Admin" }],
+    likes: [
+      {
+        userId: { type: Schema.Types.ObjectId, required: true, refPath: 'likes.userModel' },
+        userModel: { type: String, required: true, enum: ['Student', 'Admin'] }
+      }
+    ],
     comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
     media: { type: String, default: null },
   },
