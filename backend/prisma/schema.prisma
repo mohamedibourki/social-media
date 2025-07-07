@@ -1,8 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// prisma/schema.prisma
 
 generator client {
   provider = "prisma-client-js"
@@ -14,209 +10,414 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Category {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  nom         String   @db.String
-  description String?  @db.String
-  pole_id     String   @db.ObjectId
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+///–– Define the three user roles in one table ––
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+///–– All users (students, teachers, admins) ––
+model User {
+  id             String  @id @default(auto()) @map("_id") @db.ObjectId
+  firstName      String
+  lastName       String
+  email          String  @unique
+  password       String
+  phone          String?
+  address        String?
+  city           String?
+  state          String?
+  zip            String?
+  profilePicture String?
+  role           Role    @default(STUDENT)
+  clubId         String? @db.ObjectId
+
+  // STUDENT ⟶ exactly one class‐module link
+  moduleClasses    ModuleClass[]   @relation("UserModuleClass")
+  // TEACHER ⟶ links to modules they teach
+  teachingLinks    ModuleTeacher[] @relation("UserModuleTeacher")
+  teachingSchedule ScheduleEntry[] @relation("TeacherSchedule")
+
+  // SOCIAL & MESSAGING
+  club             Club?            @relation("ClubMembers", fields: [clubId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  clubLeader       Club?            @relation("ClubLeader")
+  comments         Comment[]        @relation("UserComments")
+  sentMessages     Message[]        @relation("SentMessages")
+  receivedMessages Message[]        @relation("ReceivedMessages")
+  posts            Post[]
+  likes            Like[]
+  documents        Document[]
+  eventsCreated    Event[]
+  eventAttendees   EventAttendee[]
+  notifications    Notification[]
+  supportRequests  SupportRequest[]
+  attendance       Attendance[]
+  grade            Grade[]
+  auditLog         AuditLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+///–– Top‐level school division ––
+model Pole {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+
+  sectors Sector[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum DayOfWeek {
+  LUNDI
+  MARDI
+  MERCREDI
+  JEUDI
+  VENDREDI
+  SAMEDI
+  DIMANCHE
+}
+
+model ScheduleEntry {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  dayOfWeek DayOfWeek
+  startTime DateTime
+  endTime   DateTime
+
+  classId   String  @db.ObjectId
+  roomId    String? @db.ObjectId
+  moduleId  String  @db.ObjectId
+  teacherId String  @db.ObjectId
+
+  class      Class        @relation(fields: [classId], references: [id])
+  module     Module       @relation(fields: [moduleId], references: [id])
+  teacher    User         @relation("TeacherSchedule", fields: [teacherId], references: [id])
+  room       Room?        @relation(fields: [roomId], references: [id])
+  attendance Attendance[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Grade {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  studentId String  @db.ObjectId
+  moduleId  String  @db.ObjectId
+  score     Float
+  feedback  String?
+
+  student User   @relation(fields: [studentId], references: [id])
+  module  Module @relation(fields: [moduleId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([studentId, moduleId])
+}
+
+model AuditLog {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String  @db.ObjectId
+  action  String // e.g. "LOGIN", "DELETE_POST", "ADD_EVENT"
+  details String?
+
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+///–– Filière (e.g. Dev, Infra) ––
+model Sector {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  name   String
+  code   String @unique
+  poleId String @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pole    Pole     @relation(fields: [poleId], references: [id])
+  modules Module[] // first year modules
+  tracks  Track[] // second year tracks
+  classes Class[] // classes
 }
 
 model Club {
-  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
-  name                String
-  description         String?
-  category            String
-  president           String[]  @db.ObjectId
-  vicePresident       String?   @db.ObjectId
-  members             String[]  @db.ObjectId
-  supervisor          String[]  @db.ObjectId
-  meetingDays         String[]
-  meetingTimeStart    DateTime
-  meetingTimeEnd      DateTime
-  room                String
-  logoUrl             String?
-  isActive            Boolean   @default(true)
-  tagline             String?
-  achievements        String[]
-  events              String[]  @db.ObjectId
-  applicationRequired Boolean   @default(false)
-  maxMembers          Int?
-  memberRoles         Json?
-  contactEmail        String?
-  discordServerUrl    String?
-  instagramHandle     String?
-  websiteUrl          String?
-  advisorName         String?
-  budget              Float?
-  lastAuditDate       DateTime?
-  memberCount         Int?
-  eventCount          Int?
-  engagementScore     Float?
-  createdBy           String[]  @db.ObjectId
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
-}
-
-model Pole {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  nom         String   @unique
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
   description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  logo        String
+
+  leaderId String @unique @db.ObjectId
+
+  leader  User    @relation("ClubLeader", fields: [leaderId], references: [id])
+  members User[]  @relation("ClubMembers")
+  events  Event[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name])
 }
 
-model SuperAdmin {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  fullName  String
-  email     String   @unique
-  password  String
-  role      String
+///–– Year 2 tracks (Web‑Full‑Stack, Mobile) ––
+model Track {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  code     String @unique
+  sectorId String @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sector  Sector   @relation(fields: [sectorId], references: [id])
+  modules Module[]
+}
+
+model Attendance {
+  id     String           @id @default(auto()) @map("_id") @db.ObjectId
+  status AttendanceStatus @default(PRESENT)
+
+  studentId  String @db.ObjectId
+  scheduleId String @db.ObjectId
+
+  schedule ScheduleEntry @relation(fields: [scheduleId], references: [id])
+  student  User          @relation(fields: [studentId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Subject {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  title        String
-  description  String?
-  class_id     String   @db.ObjectId
-  professor_id String?  @db.ObjectId
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  EXCUSED
+  LATE
 }
 
-model Student {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  fullName    String
-  schoolEmail String   @unique
-  password    String
-  birthDay    DateTime
-  gender      String
-  className   String   @db.ObjectId
-  role        String   @default("Student")
+model Room {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  name     String   @unique // e.g., "Room 101"
+  capacity Int?
+  type     RoomType @default(CLASSROOM) // lab, classroom, etc.
+
+  scheduleEntries ScheduleEntry[]
 }
 
-model Admin {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  fullName  String
-  email     String   @unique
-  password  String
-  role      String
+enum RoomType {
+  CLASSROOM
+  LAB
+  MEETING
+}
+
+///–– A specific class group (Dev101, Dev102) ––
+model Class {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  semester Int // 1 or 2
+
+  sectorId String @db.ObjectId
+
+  sector          Sector          @relation(fields: [sectorId], references: [id])
+  moduleClasses   ModuleClass[] // all students/modules in that class
+  scheduleEntries ScheduleEntry[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+///–– A course module (M101, M105, etc.) ––
+model Module {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  code     String @unique
+  semester Int // 1 = first year, 2 = second year
+
+  sectorId String  @db.ObjectId
+  trackId  String? @db.ObjectId
+
+  sector          Sector          @relation(fields: [sectorId], references: [id])
+  track           Track?          @relation(fields: [trackId], references: [id])
+  moduleClasses   ModuleClass[] // which classes get this module
+  teacherLinks    ModuleTeacher[] // which teachers teach it
+  documents       Document[]
+  scheduleEntries ScheduleEntry[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Grade     Grade[]
+}
+
+model Notification {
+  id     String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId String  @db.ObjectId
+  title  String
+  body   String?
+  read   Boolean @default(false)
+  link   String? // where to go when clicked
+  type   String // e.g. "MESSAGE", "COMMENT", "EVENT"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([createdAt])
+}
+
+model SupportRequest {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String      @db.ObjectId
+  type      RequestType // FEEDBACK or ISSUE
+  subject   String
+  message   String
+  status    String      @default("OPEN") // OPEN, IN_PROGRESS, CLOSED
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+enum RequestType {
+  FEEDBACK
+  ISSUE
 }
 
 model Post {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
   content   String
-  author    String   @db.ObjectId
-  event     String   @db.ObjectId
-  likes     Json?
-  comments  String[] @db.ObjectId
-  media     String?
+  authorId  String   @db.ObjectId
+  type      PostType @default(NORMAL) // NORMAL or ANNOUNCEMENT
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  author   User      @relation(fields: [authorId], references: [id])
+  comments Comment[]
+  likes    Like[]
+}
+
+enum PostType {
+  NORMAL
+  ANNOUNCEMENT
+}
+
+///–– Join table: which students/classes take which modules ––
+model ModuleClass {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  moduleId String  @db.ObjectId
+  classId  String  @db.ObjectId
+  userId   String? @db.ObjectId
+
+  module Module @relation(fields: [moduleId], references: [id])
+  class  Class  @relation(fields: [classId], references: [id])
+  user   User?  @relation("UserModuleClass", fields: [userId], references: [id])
+
+  @@unique([moduleId, classId, userId])
+}
+
+///–– Join table: which teachers teach which modules ––
+model ModuleTeacher {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  moduleId  String @db.ObjectId
+  teacherId String @db.ObjectId
+
+  module  Module @relation(fields: [moduleId], references: [id])
+  teacher User   @relation("UserModuleTeacher", fields: [teacherId], references: [id])
+
+  @@unique([moduleId, teacherId])
+}
+
+model EventAttendee {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String @db.ObjectId
+  eventId String @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id])
+  event Event @relation(fields: [eventId], references: [id])
+
+  @@unique([userId, eventId])
+}
+
+///–– Comments on posts ––
+model Comment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  content   String
+  authorId  String   @db.ObjectId
+  postId    String   @db.ObjectId
+  author    User     @relation("UserComments", fields: [authorId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+///–– Likes on posts ––
 model Like {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  user      String   @db.ObjectId
-  post      String   @db.ObjectId
+  userId    String   @db.ObjectId
+  postId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
+///–– Direct messages between users ––
+model Message {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  content    String
+  senderId   String   @db.ObjectId
+  receiverId String   @db.ObjectId
+  sentAt     DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sender   User @relation("SentMessages", fields: [senderId], references: [id])
+  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id])
+
+  @@index([createdAt])
+}
+
+///–– Calendar events ––
 model Event {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
-  description String
-  date        DateTime
-  location    String
-  organizer   String   @db.ObjectId
-  posts       String[] @db.ObjectId
-  attendees   String[] @db.ObjectId
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  description String?
+  startAt     DateTime
+  endAt       DateTime
+  creatorId   String   @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  creator        User            @relation(fields: [creatorId], references: [id])
+  eventAttendees EventAttendee[]
+  Club           Club?           @relation(fields: [clubId], references: [id])
+  clubId         String?         @db.ObjectId
+
+  @@index([createdAt])
 }
 
-model Comment {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  text        String
-  authorId    String   @db.ObjectId
-  authorModel String
-  post        String   @db.ObjectId
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model Class {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  course         String
-  group          String
-  students       String[] @db.ObjectId
-  subjects       String[]
-  teachers       String[] @db.ObjectId
-  semester       Int
-  leader         String   @db.ObjectId
-  superVisor     String   @db.ObjectId
-  traineeManager String   @db.ObjectId
-  schedules      String[] @db.ObjectId
-  department     String?
-  status         String   @default("active")
-  location       String?
-  notes          String?
-  createdBy      String   @db.ObjectId
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-}
-
-model Resource {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  type        String
-  category    String
-  subject     String
+///–– Uploaded files/resources ––
+model Document {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
   name        String
-  description String?   @default("")
-  tags        String[]
-  data        String
-  size        Int
-  contentType String
-  isPublic    Boolean   @default(false)
-  accessList  String[]
-  downloadUrl String?   @default("")
-  isArchived  Boolean   @default(false)
-  version     String?   @default("1.0")
-  views       Int       @default(0)
-  downloads   Int       @default(0)
-  expiresAt   DateTime?
-  createdBy   String    @db.ObjectId
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
+  url         String
+  description String?
 
-model ClassSchedule {
-  id                String    @id @default(auto()) @map("_id") @db.ObjectId
-  subject           String
-  teacher           String    @db.ObjectId
-  group             String
-  students          String[]  @db.ObjectId
-  room              String
-  tags              String[]
-  day               String
-  locationType      String
-  onlineLink        String?
-  startTime         DateTime
-  endTime           DateTime
-  color             String
-  durationInMinutes Int?
-  notes             String?
-  status            String    @default("Scheduled")
-  repeatPattern     String    @default("None")
-  repeatUntil       DateTime?
-  assignmentType    String?
-  createdBy         String    @db.ObjectId
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  moduleId   String @db.ObjectId
+  uploaderId String @db.ObjectId
+
+  module   Module @relation(fields: [moduleId], references: [id])
+  uploader User   @relation(fields: [uploaderId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
