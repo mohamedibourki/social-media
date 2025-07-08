@@ -1,8 +1,8 @@
 import { Router } from "express";
-import poleRoutes from "./pole";
+import { getPoles } from "../controllers/pole";
 
 const router = Router();
 
-router.use("/poles", poleRoutes);
+router.get("/", getPoles);
 
 export default router;

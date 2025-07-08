@@ -6,13 +6,13 @@
     "dev": "bun --hot index.ts"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "^1.2.18"
   },
   "peerDependencies": {
     "typescript": "^5.6.2"
   },
   "dependencies": {
-    "@prisma/client": "6.11.1",
+    "@prisma/client": "^6.11.1",
     "@types/bcrypt": "^5.0.2",
     "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.7",
@@ -29,7 +29,7 @@
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
+    "dotenv": "^17.1.0",
     "express": "^4.21.1",
     "express-rate-limit": "^7.4.1",
     "express-session": "^1.18.1",
@@ -41,11 +41,12 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.16",
-    "prisma": "6.11.1",
+    "prisma": "^6.11.1",
     "socket.io": "^4.8.1",
     "ts-node": "^10.9.2",
     "validator": "^13.12.0",
     "winston": "^3.17.0",
     "zod": "^3.25.71"
-  }
+  },
+  "private": true
 }
