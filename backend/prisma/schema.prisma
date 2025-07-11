@@ -18,19 +18,23 @@ enum Role {
 
 ///–– All users (students, teachers, admins) ––
 model User {
-  id             String  @id @default(auto()) @map("_id") @db.ObjectId
-  firstName      String
-  lastName       String
-  email          String  @unique
-  password       String
-  phone          String?
-  address        String?
-  city           String?
-  state          String?
-  zip            String?
-  profilePicture String?
-  role           Role    @default(STUDENT)
-  clubId         String? @db.ObjectId
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  firstName         String
+  lastName          String
+  username          String
+  email             String    @unique
+  password          String?
+  phone             String?
+  address           String?
+  city              String?
+  state             String?
+  zip               String?
+  profilePicture    String?
+  googleId          String? // OAuth ID
+  resetToken        String?
+  resetTokenExpires DateTime?
+  role              Role      @default(STUDENT)
+  clubId            String?   @db.ObjectId
 
   // STUDENT ⟶ exactly one class‐module link
   moduleClasses    ModuleClass[]   @relation("UserModuleClass")
